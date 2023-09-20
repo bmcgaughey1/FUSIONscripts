@@ -4,17 +4,24 @@
 # FUSIONscripts
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
-FUSIONscripts holds the processing scripts for AreaProcessor that are
-distributed with FUSION. This repository was created to put the scripts
-(DOS batch files) under version control and to facilitate sharing.
+The APscripts folder holds the processing scripts for AreaProcessor that
+are distributed with FUSION. This repository was created to put all of
+my FUSION related scripts (DOS batch files) under version control and to
+facilitate sharing.
 
-There is another repository (FUSIONscriptsADV) that has more advanced
-scripts for use with AreaProcessor workflows. However, the advanced
-scripts are not for the meek. They produce more metrics and require a
-bit more work to configure and use.
+There is a second set of scripts in the APscriptsADV that has more
+advanced scripts for use with AreaProcessor workflows. However, the
+advanced scripts are not for the meek. They produce more metrics and
+require a bit more work to configure and use. Also in this folder are
+some python scripts used with ArcMap (via arcpy) to perform some useful
+tasks on the metric rasters.
+
+There is also a set of scripts in the DEMconversion folder used to
+convert DEM files into FUSION’s .dtm format and split large DEMs into
+smaller pieces. This folder also contains a basic folder structure that
+I use for most lidar data processing projects.
 
 One major caution with both sets of scripts is that the cell size for
 metrics cannot be changed by simply changing the cell size in

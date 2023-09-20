@@ -1,0 +1,50 @@
+This zip archive has some useful command scripts for preparing data for processing. It also has a simple folder structure that
+I have used for most of my lidar data processing. The Boundary folder won't be used by most folks. This folder structure is 
+typically placed in a folder with a project area identifier. The AP_run folder is used as the primary output folder for 
+AreaProcessor. The ground folder will have the ground models converted to FUSION's .dtm format. The Ground\USGS folder
+is used to hold USGS 10m DEMs for the area (in FUSION's .dtm format) to provide ground data for areas outside the lidar 
+boundary (some of the topographic metrics I create use a large search radius so areas outside the lidar boundary need 
+ground data). The ReturnDensity folder will contain the return density layers needed for AreaProcessor's tiling logic.
+
+The archive also has two example projection files in single-line format. This is the format required by the gdal_translate
+utility. Some GIS functions create projection files in a multi-line format that doesn't work with gdal_translate.
+
+The scripts for converting ground models and computing return density rasters rely on files containing a list of the ground models
+(not in FUSION's .dtm format) and a separate file with a list of all LAS/LAZ files for the area. These list files can be created
+using DOS commands or any other method that works for you. The goal is a text file that has a full path to a file on each line
+of the text file.
+
+DOS Command to build list of ground models...this will get all GRID folders starting at the root level provided the folder
+names start with "BE". Adjust the command as needed if this is not the case and change the drive letter as needed. For
+GRID format, each folder contains several files but gdal_translate only needs the folder name.
+
+dir /b /s G:\be*. >BEfilelist.txt
+
+If you need to get models from several drives, append to the existing file like this (use ">>" instead or ">"):
+
+dir /b /s G:\be*. >>BEfilelist.txt
+
+For ground models in other formats (TIFF for example), you can use this command line to build a list of file names:
+
+dir /b /s *.tif >BEfilelist.txt
+
+You can do about the same thing to get a list of LAS files except you have to check the folder structure to see if there are
+folders with separate LAS files containing only ground points. For Quantum jobs, there is usually an "ALL_POINTS" folder and
+another folder for ground points (sometimes "GROUNDS" but not always). For multi-delivery acquisitions, you can't count on a
+consistent folder structure so you have to be more careful when "automating" the list creation. As a last resort, you can 
+list everything and then edit the list.
+
+For LAS files:
+dir /b /s *.las >LASfilelist.txt
+
+Once you have the list files, you can convert groundmodels using the DoConvertDEM.bat script. It will call the Convert_DEM.bat
+file for each ground model in the BEfilelist.txt file. Convert_DEM.bat converts the ground models from their original format 
+into ASCII raster format, use FUSION's ASCII2DTM utility to convert the ASCII raster files into FUSION's .dtm format, and split
+the resulting .dtm file into smaller chunks for more efficient memory use while processing. The splitting step may not be 
+necessary when using the 64-bit version of the command line tools on a computer with more than 2Gb of RAM per processing stream.
+
+Note that the Convert_DEM.bat file assumes the units for the ground models are feet. Change the command line for ASCII2DTM (the 
+part with F F 0 0 0 0) as needed for your data.
+
+For the return density grids, the DoReturnDensity.bat script will create a 100 unit grid for all the point files listed in 
+LASfilelist.txt. This resolution was intended for data with horizontal units of meters. Change the cell size to 330 for data in feet.

@@ -1,0 +1,50 @@
+rem posttile_intensityimage.bat
+
+REM intensity images...does not use the buffered extent
+if /I [%DOINTENSITY%]==[true] (
+	intensityimage /verbose /void:128,128,128 /intrange:%AP_INTENSITYRANGE% "/projection:%BASEPRJ%" %AP_CLASSOPTION% %INTENSITYCELLSIZE% "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%\temp_intensity.bmp" "%AP_INPUTTILES%"
+REM	catalog %CLASSOPTION% /bmp /noclasssummary /intensity:%INTENSITYCELLAREA%,%INTENSITYRANGE% /imageextent:%BLOCKEXTENT% "%AP_INPUTTILES%" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%\temp.csv"
+
+	if NOT "%BLOCKNAME%"=="" (
+		rem rename intensity image and world file using block name
+		call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "temp_intensity.bmp" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmp"
+		call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "temp_intensity.bmpw" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmpw"
+		call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "temp_intensity.prj" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.prj"
+
+		rem if we are not merging final images and we are working on a block, move the outputs
+		if /I NOT "%MERGEBLOCKINTENSITY%"=="true" (
+			rem move files to final products folder
+			call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmp" "%FINALPRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmp"
+			call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmpw" "%FINALPRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmpw"
+			call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.prj" "%FINALPRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.prj"
+
+			CALL "%PROCESSINGHOME%\convert2img" "%FINALPRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%\%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmp" "%FINALPRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%"
+
+			rem delete world file
+			if /I NOT "%KEEPASCIIFILES%"=="true" (
+				del "%FINALPRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%\%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmpw"
+			)
+		) ELSE (
+			CALL "%PROCESSINGHOME%\convert2img" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%\%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmp" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%"
+
+			rem delete world file
+			if /I NOT "%KEEPASCIIFILES%"=="true" (
+				del "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%\%BLOCKNAME%_Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmpw"
+			)
+		)
+	) ELSE (
+		rem rename intensity image and world file
+		call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "temp_intensity.bmp" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmp"
+		call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "temp_intensity.bmpw" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmpw"
+		call "%PROCESSINGHOME%\move_rename" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "temp_intensity.prj" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%" "Intensity_AA_%INTENSITYFILEIDENTIFIER%.prj"
+
+		CALL "%PROCESSINGHOME%\convert2img" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%\Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmp" "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%"
+
+		rem delete world file
+		if /I NOT "%KEEPASCIIFILES%"=="true" (
+			del "%PRODUCTHOME%\Intensity_%INTENSITYFILEIDENTIFIER%\Intensity_AA_%INTENSITYFILEIDENTIFIER%.bmpw"
+		)
+	)
+)
+
+:end

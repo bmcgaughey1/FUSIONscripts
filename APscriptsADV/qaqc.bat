@@ -1,0 +1,1 @@
+catalog /noclasssummary /coverage /rawcounts /density:900,4,10 /firstdensity:900,4,10 /intensity:900,0,255 L:\LidarData\Dinkey-Teakettle_original_data_2010\POINTS\LAS\*.las L:\LidarData\Dinkey-Teakettle_original_data_2010\Processing\Dinkey_2010.csv
